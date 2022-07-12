@@ -1,0 +1,35 @@
+﻿@using TrainTicketBooking.Models
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Route List";
+}
+@model List<Route>
+<div class="container-lg">
+    <div class="p-3 bg-white rounded-3 shadow-sm my-3">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Route route in Model)
+                {
+                    <tr class="py-1 bg-light">
+                        <td>
+                            <div>
+                                @route.RouteName
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
