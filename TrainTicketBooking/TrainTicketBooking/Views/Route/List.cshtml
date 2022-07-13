@@ -9,24 +9,25 @@
 @model List<Route>
 <div class="container-lg">
     <div class="p-3 bg-white rounded-3 shadow-sm my-3">
-        <table>
+        <table class="w-100">
             <thead>
                 <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
+                    <th>Route</th>
+                    <th>From - To</th>
+                    <th>Duration</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (Route route in Model)
                 {
-                    <tr class="py-1 bg-light">
-                        <td>
+                    <tr class="my-2">
+                        <td class="py-3 ps-3 bg-light rounded-start">
                             <div>
                                 @route.RouteName
                             </div>
                         </td>
+                        <td>@route.FromNavigation.LocationName - @route.ToNavigation.LocationName</td>
+                        <td>@(route.Duration)h</td>
                     </tr>
                 }
             </tbody>

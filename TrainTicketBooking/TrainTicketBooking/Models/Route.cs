@@ -16,7 +16,7 @@ namespace TrainTicketBooking.Models
         public string RouteName { get; set; }
         public int From { get; set; }
         public int To { get; set; }
-        public byte[] Duration { get; set; }
+        public int Duration { get; set; }
         public string Path { get; set; }
         public double? Distance { get; set; }
 
