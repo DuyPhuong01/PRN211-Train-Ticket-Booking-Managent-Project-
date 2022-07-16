@@ -24,6 +24,7 @@ namespace TrainTicketBooking.Models
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Route> Routes { get; set; }
         public virtual DbSet<Ticket> Tickets { get; set; }
+        public virtual DbSet<TicketClass> TicketClasses { get; set; }
         public virtual DbSet<TicketPrice> TicketPrices { get; set; }
         public virtual DbSet<TicketType> TicketTypes { get; set; }
         public virtual DbSet<Train> Trains { get; set; }
@@ -47,7 +48,9 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("carriages");
 
-                entity.Property(e => e.CarriageId).HasColumnName("carriage_id");
+                entity.Property(e => e.CarriageId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("carriage_id");
 
                 entity.Property(e => e.CarriageNumber).HasColumnName("carriage_number");
 
@@ -64,7 +67,9 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("locations");
 
-                entity.Property(e => e.LocationId).HasColumnName("location_id");
+                entity.Property(e => e.LocationId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("location_id");
 
                 entity.Property(e => e.LocationName)
                     .IsRequired()
@@ -76,7 +81,9 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("orders");
 
-                entity.Property(e => e.OrderId).HasColumnName("order_id");
+                entity.Property(e => e.OrderId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("order_id");
 
                 entity.Property(e => e.OrderDate)
                     .HasColumnType("datetime")
@@ -122,7 +129,9 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("roles");
 
-                entity.Property(e => e.RoleId).HasColumnName("role_id");
+                entity.Property(e => e.RoleId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("role_id");
 
                 entity.Property(e => e.RoleName)
                     .HasMaxLength(128)
@@ -133,7 +142,9 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("routes");
 
-                entity.Property(e => e.RouteId).HasColumnName("route_id");
+                entity.Property(e => e.RouteId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("route_id");
 
                 entity.Property(e => e.Distance).HasColumnName("distance");
 
@@ -168,9 +179,19 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("tickets");
 
-                entity.Property(e => e.TicketId).HasColumnName("ticket_id");
+                entity.Property(e => e.TicketId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ticket_id");
 
                 entity.Property(e => e.CarriageId).HasColumnName("carriage_id");
+
+                entity.Property(e => e.Row)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("row");
+
+                entity.Property(e => e.Seat).HasColumnName("seat");
 
                 entity.Property(e => e.TicketPriceId).HasColumnName("ticket_price_id");
 
@@ -187,11 +208,31 @@ namespace TrainTicketBooking.Models
                     .HasConstraintName("FK_Ticket_TicketPrice");
             });
 
+            modelBuilder.Entity<TicketClass>(entity =>
+            {
+                entity.HasKey(e => e.ClassId)
+                    .HasName("PK__ticket_c__FDF4798603CF45E4");
+
+                entity.ToTable("ticket_classes");
+
+                entity.Property(e => e.ClassId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("class_id");
+
+                entity.Property(e => e.ClassName)
+                    .HasMaxLength(128)
+                    .HasColumnName("class_name");
+            });
+
             modelBuilder.Entity<TicketPrice>(entity =>
             {
                 entity.ToTable("ticket_prices");
 
-                entity.Property(e => e.TicketPriceId).HasColumnName("ticket_price_id");
+                entity.Property(e => e.TicketPriceId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ticket_price_id");
+
+                entity.Property(e => e.ClassId).HasColumnName("class_id");
 
                 entity.Property(e => e.Price)
                     .HasColumnType("money")
@@ -200,6 +241,12 @@ namespace TrainTicketBooking.Models
                 entity.Property(e => e.TripId).HasColumnName("trip_id");
 
                 entity.Property(e => e.TypeId).HasColumnName("type_id");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.TicketPrices)
+                    .HasForeignKey(d => d.ClassId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TicketPrice_TicketClass");
 
                 entity.HasOne(d => d.Trip)
                     .WithMany(p => p.TicketPrices)
@@ -217,11 +264,13 @@ namespace TrainTicketBooking.Models
             modelBuilder.Entity<TicketType>(entity =>
             {
                 entity.HasKey(e => e.TypeId)
-                    .HasName("PK__ticket_t__2C000598FF116090");
+                    .HasName("PK__ticket_t__2C000598B926B0EC");
 
                 entity.ToTable("ticket_types");
 
-                entity.Property(e => e.TypeId).HasColumnName("type_id");
+                entity.Property(e => e.TypeId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("type_id");
 
                 entity.Property(e => e.TypeName)
                     .HasMaxLength(128)
@@ -232,7 +281,9 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("trains");
 
-                entity.Property(e => e.TrainId).HasColumnName("train_id");
+                entity.Property(e => e.TrainId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("train_id");
 
                 entity.Property(e => e.TrainName)
                     .IsRequired()
@@ -245,17 +296,15 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("trips");
 
-                entity.Property(e => e.TripId).HasColumnName("trip_id");
-
-                entity.Property(e => e.Date)
-                    .HasColumnType("date")
-                    .HasColumnName("date");
+                entity.Property(e => e.TripId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("trip_id");
 
                 entity.Property(e => e.RouteId).HasColumnName("route_id");
 
-                entity.Property(e => e.Start)
+                entity.Property(e => e.Time)
                     .HasColumnType("datetime")
-                    .HasColumnName("start");
+                    .HasColumnName("time");
 
                 entity.Property(e => e.TrainId).HasColumnName("train_id");
 
@@ -276,7 +325,9 @@ namespace TrainTicketBooking.Models
             {
                 entity.ToTable("users");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.UserId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("user_id");
 
                 entity.Property(e => e.City)
                     .HasMaxLength(128)

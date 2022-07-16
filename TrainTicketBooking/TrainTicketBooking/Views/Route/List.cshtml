@@ -9,28 +9,144 @@
 @model List<Route>
 <div class="container-lg">
     <div class="p-3 bg-white rounded-3 shadow-sm my-3">
-        <table class="w-100">
-            <thead>
-                <tr>
-                    <th>Route</th>
-                    <th>From - To</th>
-                    <th>Duration</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (Route route in Model)
-                {
-                    <tr class="my-2">
-                        <td class="py-3 ps-3 bg-light rounded-start">
-                            <div>
-                                @route.RouteName
-                            </div>
-                        </td>
-                        <td>@route.FromNavigation.LocationName - @route.ToNavigation.LocationName</td>
-                        <td>@(route.Duration)h</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-6">
+                <table class="w-100 table">
+                    <thead>
+                        <tr>
+                            <th>Route</th>
+                            <th>From - To</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Route route in Model)
+                        {
+                            <tr onclick="loadTrip(@route.RouteId, 1)">
+                                <td>
+                                    <div>
+                                        <span>@route.RouteName</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span>@route.FromNavigation.LocationName - @route.ToNavigation.LocationName</span>
+                                </td>
+                                <td>@(route.Duration)h</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="mt-3">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            @if (ViewBag.PageNumber > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="/route/list/@(ViewBag.PageNumber - 1)">Previous</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">Previous</a>
+                                </li>
+                            }
+                            <li class="page-item"><a class="page-link">@ViewBag.PageNumber</a></li>
+                            @if (ViewBag.PageNumber < ViewBag.NumberOfPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="/route/list/@(ViewBag.PageNumber + 1)">Next</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="col-6 border-start border-2">
+                <table class="w-100 table" id="trip-list">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div id="select-route-message" class="text-center">
+                    <h5 class="text-muted">Select Route</h5>
+                </div>
+                <div id="paging-trip-list" class="mt-3">
+                    
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+@section Scripts  
+{  
+    <script type="text/javascript">
+      
+        function loadTrip(routeid, pagenumber) {
+            $("#trip-list tbody tr").remove();  
+            $.ajax({  
+                type: 'POST',  
+                url: '/trip/list',  
+                dataType: 'json',  
+                data: { 
+                    routeid: routeid,
+                    pagenumber: pagenumber
+                },  
+                success: function (data) {
+                    $('#select-route-message').remove(); 
+                    var items = '';  
+                    $.each(data.trips, function (i, item) {
+                        var date = new Date(item.time);
+                        var rows = '<tr>'
+                            + '<td>' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</td>'
+                            + '<td>' + date.getHours() + ':' + date.getMinutes() + '</td>'
+                            + '<td><a class="btn btn-primary" href="/trip/details/' + item.tripId +'">Select</a></td>'
+                            + '</tr>';
+                        $('#trip-list tbody').append(rows);  
+                    });
+
+                    $('#paging-trip-list nav').remove(); 
+                    var paging = '<nav aria-label="Page navigation example">'
+                       +'<ul class="pagination justify-content-center">';
+                    if (data.pagenumber > 1) {
+                        paging += '<li class="page-item">'
+                            + '<a class="page-link" onclick="loadTrip(' + routeid + ', ' + (data.pagenumber - 1) + ')">Previous</a>'
+                            + '</li>';
+                    } else {
+                        paging += '<li class="page-item disabled">'
+                            + ' <a class="page-link">Previous</a>'
+                            + '</li>';
+                    }
+                    paging += '<li class="page-item"><a class="page-link">' + data.pagenumber + '</a></li>';
+                    if (data.pagenumber < data.number_of_page) {
+                        paging += '<li class="page-item">'
+                            + '<a class="page-link" onclick="loadTrip(' + routeid + ', ' + (data.pagenumber + 1) + ')">Next</a>'
+                            + '</li>';
+                    } else {
+                        paging += '<li class="page-item disabled">'
+                            + ' <a class="page-link">Next</a>'
+                            + '</li>';
+                    }
+                    paging += '</ul>'+
+                    '</nav>';
+                    $('#paging-trip-list').append(paging);
+                },  
+                error: function (ex) { 
+                }  
+            });  
+            return false;  
+        }
+    </script>  
+}

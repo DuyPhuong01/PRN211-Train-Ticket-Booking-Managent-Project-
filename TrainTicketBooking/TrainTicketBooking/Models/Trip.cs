@@ -15,8 +15,7 @@ namespace TrainTicketBooking.Models
         public int TripId { get; set; }
         public int RouteId { get; set; }
         public int TrainId { get; set; }
-        public DateTime Date { get; set; }
-        public DateTime Start { get; set; }
+        public DateTime Time { get; set; }
 
         public virtual Route Route { get; set; }
         public virtual Train Train { get; set; }

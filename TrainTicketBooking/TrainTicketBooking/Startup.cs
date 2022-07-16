@@ -33,8 +33,23 @@ namespace TrainTicketBooking
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
+                    name: "route-list",
+                    pattern: "route/list/{pagenumber?}",
+                    new { controller = "Route", action = "List" }
+                    );
+                endpoints.MapControllerRoute(
+                    name: "trip-list",
+                    pattern: "trip/list/{routeid}/{pagenumber?}",
+                    new { controller = "Trip", action = "List" }
+                    );
+                endpoints.MapControllerRoute(
+                    name: "trip-list",
+                    pattern: "trip/details/{tripid}",
+                    new { controller = "Trip", action = "Details" }
+                    );
+                endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=home}/{action}"
+                    pattern: "{controller=home}/{action=index}"
                     );
             });
         }

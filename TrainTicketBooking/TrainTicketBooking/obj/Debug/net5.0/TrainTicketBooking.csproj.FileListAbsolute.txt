@@ -66,3 +66,4 @@ C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-B
 C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\TrainTicketBooking.RazorTargetAssemblyInfo.cs
 C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\TrainTicketBooking.Views.pdb
 C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\Razor\Views\Route\List.cshtml.g.cs
+C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\Razor\Views\Trip\Details.cshtml.g.cs

@@ -10,3 +10,16 @@
 body {
     background-color: var(--background-color);
 }
+
+table tbody tr {
+    vertical-align: middle;
+}
+
+table tr th:last-child,
+table tr td:last-child {
+    text-align: right;
+}
+
+table tbody tr:hover {
+    background-color: #F0F2F5;
+}
