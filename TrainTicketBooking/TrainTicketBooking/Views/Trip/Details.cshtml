@@ -8,19 +8,135 @@
 }
 @model Trip
 <div class="container-lg">
-    <div class="my-3">
-        <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
-            <div>
-                <span>@Model.name</span>
-                <span></span>
-                <span></span>
-                <span></span>
+    <div class="my-3 row">
+        <div class="col-4">
+            <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
+                <div>
+                    <p>@Model.Route.RouteName</p>
+                    <p>@Model.Route.FromNavigation.LocationName - @Model.Route.ToNavigation.LocationName</p>
+                    <p>@Model.Train.TrainName</p>
+                    <p>@(Model.Time.Day)/@(Model.Time.Month)/@(Model.Time.Year) @(Model.Time.Hour):@(Model.Time.Minute)</p>
+                </div>
+            </div>
+            <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
+                <div>
+                    <div class="ticket-type-selector d-flex justify-content-between">
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between">
+                            <b>Vị trí</b>
+                            <b>Loại</b>
+                            <b>Giá</b>
+                        </div>
+                        <hr />
+                    </div>
+                    <div id="bill-list">
+                    </div>
+                    <div>
+                        <hr />
+                        <div class="d-flex justify-content-between">
+                            <b>Tổng</b>
+                            <b><span id="total-bill">0</span><span> đ</span></b>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <a class="btn btn-outline-danger" onclick="clearlist()">Clear</a>
+                        <a class="btn btn-outline-success">Add to cart</a>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
-        
+        <div class="col-8">
+            @foreach (Carriage carriage in ViewBag.Carriages)
+            {
+                <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
+                    <div class="text-center">
+                        <div class=""><h3>Toa tàu số @carriage.CarriageNumber</h3></div>
+                    </div>
+                    <div class="carriage p-3 border border-5 rounded-3">
+                        <div class="d-flex">
+                            @for (int i = 0; i < @carriage.Tickets.Count - 4; i += 4)
+                            {
+                                <div>
+                                    @for (int j = i; j < i + 4; j++)
+                                    {
+                                        @if (carriage.Tickets.ToList()[j].Status == 1)
+                                        {
+                                            <label>
+                                                <input type="checkbox" name="seat_name" value="@(carriage.Tickets.ToList()[j].TicketId)" onclick="selectSeat(this, @(carriage.Tickets.ToList()[j].TicketPrice.Price))" hidden>
+                                                <a class="btn btn-outline-success @(j==i+1 ? "mb-5" : "mb-2")">@(carriage.Tickets.ToList()[j].Row)@(carriage.Tickets.ToList()[j].Seat)</a>
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-danger @(j==i+1 ? "mb-5" : "mb-2")">@(carriage.Tickets.ToList()[j].Row)@(carriage.Tickets.ToList()[j].Seat)</a>
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
-@section Scripts  
-{  }
+<div id="select-ticket-type" class="d-none">
+    <select name="type_id" class="form-select">
+        @foreach (TicketType ticketType in ViewBag.TicketTypes)
+        {
+            <option value="@ticketType.TypeId">@ticketType.TypeName</option>
+        }
+    </select>
+</div>
+@section Scripts
+    {
+    <script>
+        var a = $('#select-ticket-type').html();
+
+        function selectSeat(cb, price) {
+            if (cb.checked) {
+                var name = $('.carriage label input[value="' + cb.value + '"] + a').text();
+                var row = '<div id="bill-' + cb.value + '" class="d-flex justify-content-between align-items-center mb-2">'
+                    + '<div>' + name + '</div>'
+                    + '<div>'
+                    + a
+                    + '</div>'
+                    + '<div class="price">' + price + '</div>'
+                    + '</div>';
+
+                $('#bill-list').append(row);
+                $('#bill-list #bill-' + cb.value + ' select').change(function() {
+                    if ($('#bill-list #bill-' + cb.value + ' select option').first().is(':selected')) {
+                        $('#bill-list #bill-' + cb.value + ' .price').text(price);
+                    } else {
+                        $('#bill-list #bill-' + cb.value + ' .price').text(price / 2);
+                    }
+                    calculateTotal();
+                });
+            } else {
+                $('#bill-list #bill-' + cb.value).remove();
+            }
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            var sum = 0;
+            $('#bill-list .price').each(function() {
+                sum += parseInt($(this).text());
+
+            });
+            $('#total-bill').text(sum);
+        }
+
+        function clearlist() {
+            $('#bill-list').html('');
+            $('.carriage label input[type="checkbox"]:checked').each(function() {
+                    this.checked = false;
+            });
+        }
+    </script>
+
+    }

@@ -112,6 +112,8 @@ namespace TrainTicketBooking.Models
 
                 entity.Property(e => e.TicketId).HasColumnName("ticket_id");
 
+                entity.Property(e => e.TypeId).HasColumnName("type_id");
+
                 entity.HasOne(d => d.Order)
                     .WithMany()
                     .HasForeignKey(d => d.OrderId)
@@ -123,6 +125,12 @@ namespace TrainTicketBooking.Models
                     .HasForeignKey(d => d.TicketId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderdTicket_Ticket");
+
+                entity.HasOne(d => d.Type)
+                    .WithMany()
+                    .HasForeignKey(d => d.TypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderdTicket_TicketType");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -193,6 +201,8 @@ namespace TrainTicketBooking.Models
 
                 entity.Property(e => e.Seat).HasColumnName("seat");
 
+                entity.Property(e => e.Status).HasColumnName("status");
+
                 entity.Property(e => e.TicketPriceId).HasColumnName("ticket_price_id");
 
                 entity.HasOne(d => d.Carriage)
@@ -211,7 +221,7 @@ namespace TrainTicketBooking.Models
             modelBuilder.Entity<TicketClass>(entity =>
             {
                 entity.HasKey(e => e.ClassId)
-                    .HasName("PK__ticket_c__FDF4798603CF45E4");
+                    .HasName("PK__ticket_c__FDF47986A17FA18D");
 
                 entity.ToTable("ticket_classes");
 
@@ -240,8 +250,6 @@ namespace TrainTicketBooking.Models
 
                 entity.Property(e => e.TripId).HasColumnName("trip_id");
 
-                entity.Property(e => e.TypeId).HasColumnName("type_id");
-
                 entity.HasOne(d => d.Class)
                     .WithMany(p => p.TicketPrices)
                     .HasForeignKey(d => d.ClassId)
@@ -253,18 +261,12 @@ namespace TrainTicketBooking.Models
                     .HasForeignKey(d => d.TripId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TicketPrice_Trip");
-
-                entity.HasOne(d => d.Type)
-                    .WithMany(p => p.TicketPrices)
-                    .HasForeignKey(d => d.TypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TicketPrice_TicketType");
             });
 
             modelBuilder.Entity<TicketType>(entity =>
             {
                 entity.HasKey(e => e.TypeId)
-                    .HasName("PK__ticket_t__2C000598B926B0EC");
+                    .HasName("PK__ticket_t__2C00059816CF9509");
 
                 entity.ToTable("ticket_types");
 

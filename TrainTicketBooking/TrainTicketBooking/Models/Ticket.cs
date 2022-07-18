@@ -12,6 +12,7 @@ namespace TrainTicketBooking.Models
         public int CarriageId { get; set; }
         public string Row { get; set; }
         public int Seat { get; set; }
+        public int Status { get; set; }
 
         public virtual Carriage Carriage { get; set; }
         public virtual TicketPrice TicketPrice { get; set; }

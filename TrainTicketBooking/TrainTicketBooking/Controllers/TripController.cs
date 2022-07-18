@@ -25,11 +25,27 @@ namespace TrainTicketBooking.Controllers
         public IActionResult Details(int tripid)
         {
             PRN211_PROJECT_TRAIN_TICKET_BOOKINGContext context = new PRN211_PROJECT_TRAIN_TICKET_BOOKINGContext();
-
+            
             Trip trip = context.Trips
                 .Include(t => t.Train)
-
+                .Include(t => t.Train.Carriages)
+                .Include(t => t.Train.Carriages)
+                .Include(t => t.Route)
+                .Include(t => t.Route.FromNavigation)
+                .Include(t => t.Route.ToNavigation)
                 .FirstOrDefault(t => t.TripId == tripid);
+
+            List<Carriage> carriages = context.Carriages
+                .Include(c => c.Tickets)
+                .Include("Tickets.TicketPrice")
+                .Where(c => c.TrainId == trip.TrainId)
+                .ToList();
+
+            List<TicketType> ticketTypes = context.TicketTypes.ToList();
+
+            ViewBag.Carriages = carriages;
+            ViewBag.TicketTypes = ticketTypes;
+            //List<Ticket> tickets = context.Tickets.Where(t => t.TicketPriceId == trip.TicketPrices)
             return View(trip);
         }
     }

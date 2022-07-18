@@ -80,7 +80,6 @@ GO
 
 CREATE TABLE [ticket_prices] (
   [ticket_price_id] int PRIMARY KEY NOT NULL,
-  [type_id] int NOT NULL,
   [class_id] int NOT NULL,
   [trip_id] int NOT NULL,
   [price] money NOT NULL
@@ -92,13 +91,15 @@ CREATE TABLE [tickets] (
   [ticket_price_id] int NOT NULL,
   [carriage_id] int NOT NULL,
   [row] varchar(1) NOT NULL,
-  [seat] int NOT NULL
+  [seat] int NOT NULL,
+  [status] int NOT NULL,
 )
 GO
 
 CREATE TABLE [ordered_tickets] (
   [order_id] int NOT NULL,
   [ticket_id] int NOT NULL,
+  [type_id] int NOT NULL,
   [price] money NOT NULL
 )
 GO
@@ -123,9 +124,6 @@ GO
 ALTER TABLE [trips]  WITH CHECK ADD  CONSTRAINT [FK_Trip_Train] FOREIGN KEY ([train_id]) REFERENCES [trains] ([train_id])
 GO
 
-ALTER TABLE [ticket_prices]  WITH CHECK ADD  CONSTRAINT [FK_TicketPrice_TicketType] FOREIGN KEY ([type_id]) REFERENCES [ticket_types] ([type_id])
-GO
-
 ALTER TABLE [ticket_prices]  WITH CHECK ADD  CONSTRAINT [FK_TicketPrice_TicketClass] FOREIGN KEY ([class_id]) REFERENCES [ticket_classes] ([class_id])
 GO
 
@@ -142,6 +140,9 @@ ALTER TABLE [ordered_tickets]  WITH CHECK ADD  CONSTRAINT [FK_OrderdTicket_Order
 GO
 
 ALTER TABLE [ordered_tickets]  WITH CHECK ADD  CONSTRAINT [FK_OrderdTicket_Ticket] FOREIGN KEY ([ticket_id]) REFERENCES [tickets] ([ticket_id])
+GO
+
+ALTER TABLE [ordered_tickets]  WITH CHECK ADD  CONSTRAINT [FK_OrderdTicket_TicketType] FOREIGN KEY ([type_id]) REFERENCES [ticket_types] ([type_id])
 GO
 
 insert into trains (train_id, train_name) values (1, 'A088');
@@ -593,7 +594,7 @@ insert into trips (trip_id, route_id, train_id, time) values (139, 79, 5, '2022-
 insert into trips (trip_id, route_id, train_id, time) values (140, 72, 5, '2022-02-21 18:20:05');
 insert into trips (trip_id, route_id, train_id, time) values (141, 46, 4, '2021-10-12 08:01:59');
 insert into trips (trip_id, route_id, train_id, time) values (142, 94, 3, '2022-02-05 22:19:46');
-insert into trips (trip_id, route_id, train_id, time) values (143, 1, 2, '2021-10-13 23:43:00');
+insert into trips (trip_id, route_id, train_id, time) values (143, 1, 1, '2021-10-13 23:43:00');
 insert into trips (trip_id, route_id, train_id, time) values (144, 34, 3, '2022-02-24 11:33:31');
 insert into trips (trip_id, route_id, train_id, time) values (145, 12, 2, '2022-07-23 07:50:18');
 insert into trips (trip_id, route_id, train_id, time) values (146, 50, 2, '2022-04-09 15:22:11');
@@ -1451,3 +1452,64 @@ insert into trips (trip_id, route_id, train_id, time) values (997, 28, 2, '2021-
 insert into trips (trip_id, route_id, train_id, time) values (998, 51, 2, '2022-05-01 02:44:30');
 insert into trips (trip_id, route_id, train_id, time) values (999, 61, 1, '2021-10-27 14:53:04');
 insert into trips (trip_id, route_id, train_id, time) values (1000, 59, 5, '2021-08-20 13:13:34');
+
+
+insert into ticket_prices (ticket_price_id, class_id, trip_id, price) values (1, 1, 143, 800000);
+insert into ticket_prices (ticket_price_id, class_id, trip_id, price) values (2, 2, 143, 1600000);
+
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (1, 1, 1, 'A', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (2, 1, 1, 'A', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (3, 1, 1, 'A', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (4, 1, 1, 'A', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (5, 1, 1, 'B', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (6, 1, 1, 'B', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (7, 1, 1, 'B', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (8, 1, 1, 'B', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (9, 1, 1, 'C', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (10, 1, 1, 'C', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (11, 1, 1, 'C', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (12, 1, 1, 'C', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (13, 1, 1, 'D', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (14, 1, 1, 'D', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (15, 1, 1, 'D', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (16, 1, 1, 'D', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (17, 1, 1, 'E', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (18, 1, 1, 'E', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (19, 1, 1, 'E', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (20, 1, 1, 'E', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (21, 1, 1, 'F', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (22, 1, 1, 'F', 2, 0);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (23, 1, 1, 'F', 3, 0);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (24, 1, 1, 'F', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (25, 1, 1, 'G', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (26, 1, 1, 'G', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (27, 1, 1, 'G', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (28, 1, 1, 'G', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (29, 1, 1, 'H', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (30, 1, 1, 'H', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (31, 1, 1, 'H', 3, 0);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (32, 1, 1, 'H', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (33, 1, 1, 'I', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (34, 1, 1, 'I', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (35, 1, 1, 'I', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (36, 1, 1, 'I', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (37, 1, 1, 'J', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (38, 1, 1, 'J', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (39, 1, 1, 'J', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (40, 1, 1, 'J', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (41, 1, 1, 'K', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (42, 1, 1, 'K', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (43, 1, 1, 'K', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (44, 1, 1, 'K', 4, 0);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (45, 1, 1, 'L', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (46, 1, 1, 'L', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (47, 1, 1, 'L', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (48, 1, 1, 'L', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (49, 1, 1, 'M', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (50, 1, 1, 'M', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (51, 1, 1, 'M', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (52, 1, 1, 'M', 1, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (53, 1, 1, 'N', 2, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (54, 1, 1, 'N', 3, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (55, 1, 1, 'N', 4, 1);
+insert into tickets (ticket_id, ticket_price_id, carriage_id, row, seat, status) values (56, 1, 1, 'N', 4, 1);

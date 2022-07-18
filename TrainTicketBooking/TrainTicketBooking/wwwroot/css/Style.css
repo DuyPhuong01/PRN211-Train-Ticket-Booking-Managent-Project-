@@ -23,3 +23,9 @@ table tr td:last-child {
 table tbody tr:hover {
     background-color: #F0F2F5;
 }
+
+.ticket-type-selector input[type="checkbox"]:checked + a,
+.carriage label input[type="checkbox"]:checked + a {
+    background-color: #198754;
+    color: #FFF;
+}
