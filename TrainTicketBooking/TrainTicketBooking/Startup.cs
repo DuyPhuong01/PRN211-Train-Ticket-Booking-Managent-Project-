@@ -17,6 +17,7 @@ namespace TrainTicketBooking
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -27,7 +28,9 @@ namespace TrainTicketBooking
                 app.UseDeveloperExceptionPage();
                 app.UseStaticFiles();
             }
+            app.UseSession();
 
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

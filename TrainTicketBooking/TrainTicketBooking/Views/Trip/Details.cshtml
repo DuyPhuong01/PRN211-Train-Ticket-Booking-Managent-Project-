@@ -1,4 +1,5 @@
-﻿@using TrainTicketBooking.Models
+﻿@using Microsoft.AspNetCore.Http
+@using TrainTicketBooking.Models
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -42,8 +43,15 @@
                 </div>
                 <div>
                     <div class="d-flex justify-content-between mt-3">
-                        <a class="btn btn-outline-danger" onclick="clearlist()">Clear</a>
-                        <a class="btn btn-outline-success">Add to cart</a>
+                        <a class="btn btn-outline-danger" onclick="clearlist()">Xóa hết</a>
+                        @if(Context.Session.GetString("account") != null)
+                        {
+                            <a class="btn btn-outline-success" onclick="addtocart()">Thêm vào giỏ hàng</a>
+                        } else
+                        {
+                            <a class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal-login">Đăng nhập</a>
+                        }
+
                     </div>
                 </div>
             </div>
@@ -136,6 +144,10 @@
             $('.carriage label input[type="checkbox"]:checked').each(function() {
                     this.checked = false;
             });
+        }
+        
+        function addtocart() {
+
         }
     </script>
 

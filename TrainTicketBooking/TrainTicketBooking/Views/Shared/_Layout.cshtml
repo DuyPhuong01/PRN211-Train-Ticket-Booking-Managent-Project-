@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+@using TrainTicketBooking.Models
+<!DOCTYPE html>
 
 <html>
 <head>
@@ -7,7 +10,6 @@
     <title>@ViewBag.Title</title>
     <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="~/css/Style.css" rel="stylesheet">
-    <script src="~/lib/bootstrap/js/bootstrap.js"></script>
     <script src="~/lib/jquery/jquery.js"></script>
 </head>
 <body>
@@ -16,12 +18,166 @@
             <div>
                 <a href="/route/list" class="nav-link text-muted">Chuyến đi</a>
             </div>
-            <div>
-                <a href="/cart/list" class="btn btn-light">Giỏ hàng</a>
+            <div class="d-flex">
+                @if (Context.Session.GetString("account") == null)
+                {
+                    <div>
+                        <a class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal-login">Đăng nhập</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="me-3">
+                        <div class="dropdown">
+                            <a class="nav-link text-muted dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">@(JsonConvert.DeserializeObject<User>(Context.Session.GetString("account")).Fullname)</a>
+
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">My Tickets</a></li>
+                                <li><a class="dropdown-item" href="#">User profiles</a></li>
+                                <hr/>
+                                <li><a class="dropdown-item" onclick="logout()">Log out</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="/cart/list" class="btn btn-light">Giỏ hàng</a>
+                    </div>
+                }
             </div>
         </div>
     </div>
-        @RenderBody()
+    @RenderBody()
+
+    <div id="modal-login" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Đăng nhập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="notify-login-error">
+                    </div>
+                    <form id="login-form" class="mb-3">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="username" class="form-control" id="floatingUsernameLogin" placeholder="Tên đăng nhập">
+                            <label for="floatingUsernameLogin">Tên đăng nhập</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="password" name="password" class="form-control" id="floatingPasswordLogin" placeholder="Mật khẩu">
+                            <label for="floatingPasswordLogin">Mật khẩu</label>
+                        </div>
+                    </form>
+                    <span>Chưa có tài khoản? <a class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal-register">Đăng ký</a></span>
+                </div>
+                <div class="modal-footer">
+                    <div id="loaderDiv" class="spinner-border me-3" role="status">
+                      <span class="visually-hidden">Đang đăng nhập...</span>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="login()">Đăng nhập</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-register" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Đăng Ký</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form" class="mb-3">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="username" class="form-control" id="floatingUsernameRegister" placeholder="Tên đăng nhập">
+                            <label for="floatingUsernameRegister">Tên đăng nhập</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="password" name="password" class="form-control" id="floatingPasswordRegister" placeholder="Mật khẩu">
+                            <label for="floatingPasswordRegister">Mật khẩu</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-login">Đăng Nhập</button>
+                    <button type="button" class="btn btn-primary">Đăng Ký</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 @RenderSection("scripts")
 </html>
+<script>
+    $("#loaderDiv").hide();
+
+    function login_notify_html(message, type) {
+        return `<div class="alert alert-${type} alert-dismissible" role="alert">
+                    <div>${message}</div>
+                </div>`;
+    }
+    
+    function login() {
+        var notify = $('#notify-login-error');
+        var username = $('#floatingUsernameLogin').val();
+        var password = $('#floatingPasswordLogin').val();
+
+        notify.html('');
+
+        if (username == '') {
+            notify.append(login_notify_html('You must enter username!', 'danger'));
+            return;
+        }
+        if (password == '') {
+            notify.append(login_notify_html('You must enter password!', 'danger'));
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/account/login',
+            dataType: 'json',
+            data: {
+                username: username,
+                password: password
+            },
+            beforeSend: function() {
+                $("#loaderDiv").show();
+            },
+            success: function(result) {
+                $("#loaderDiv").hide();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    notify.html('');
+                    notify.append(login_notify_html(result.htmlMsg, result.htmlMsgType));
+                }
+            },
+            error: function(ex) {
+                notify.html('');
+                notify.append(login_notify_html('There is an problem on connecting to server!', 'danger'));
+            }
+        });
+    }
+
+    function logout() {
+        $.ajax({
+            type: 'POST',
+            url: '/account/logout',
+            dataType: 'json',
+            data: {
+            },
+            success: function(result) {
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert(result.htmlMsg);
+                }
+            },
+            error: function(ex) {
+                alert(result.htmlMsg);
+            }
+        });
+    }
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

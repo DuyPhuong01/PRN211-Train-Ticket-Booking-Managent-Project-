@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,8 @@ namespace TrainTicketBooking.Controllers
             ViewBag.Carriages = carriages;
             ViewBag.TicketTypes = ticketTypes;
             //List<Ticket> tickets = context.Tickets.Where(t => t.TicketPriceId == trip.TicketPrices)
+
+            //HttpContext.Session.SetString("account", "phuong");
             return View(trip);
         }
     }
