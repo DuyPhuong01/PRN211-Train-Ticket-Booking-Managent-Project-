@@ -24,7 +24,8 @@ GO
 CREATE TABLE [orders] (
   [order_id] int PRIMARY KEY NOT NULL,
   [user_id] int NOT NULL,
-  [order_date] datetime
+  [order_date] datetime,
+  [status] int
 )
 GO
 
@@ -97,6 +98,7 @@ CREATE TABLE [tickets] (
 GO
 
 CREATE TABLE [ordered_tickets] (
+  [id] int PRIMARY KEY IDENTITY(1, 1) NOT NULL,
   [order_id] int NOT NULL,
   [ticket_id] int NOT NULL,
   [type_id] int NOT NULL,

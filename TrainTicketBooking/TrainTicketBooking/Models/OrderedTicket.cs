@@ -7,6 +7,7 @@ namespace TrainTicketBooking.Models
 {
     public partial class OrderedTicket
     {
+        public int Id { get; set; }
         public int OrderId { get; set; }
         public int TicketId { get; set; }
         public int TypeId { get; set; }

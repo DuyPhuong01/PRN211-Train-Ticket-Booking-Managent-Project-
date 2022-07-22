@@ -89,6 +89,8 @@ namespace TrainTicketBooking.Models
                     .HasColumnType("datetime")
                     .HasColumnName("order_date");
 
+                entity.Property(e => e.Status).HasColumnName("status");
+
                 entity.Property(e => e.UserId).HasColumnName("user_id");
 
                 entity.HasOne(d => d.User)
@@ -100,9 +102,9 @@ namespace TrainTicketBooking.Models
 
             modelBuilder.Entity<OrderedTicket>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("ordered_tickets");
+
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.OrderId).HasColumnName("order_id");
 
@@ -115,19 +117,19 @@ namespace TrainTicketBooking.Models
                 entity.Property(e => e.TypeId).HasColumnName("type_id");
 
                 entity.HasOne(d => d.Order)
-                    .WithMany()
+                    .WithMany(p => p.OrderedTickets)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderdTicket_Order");
 
                 entity.HasOne(d => d.Ticket)
-                    .WithMany()
+                    .WithMany(p => p.OrderedTickets)
                     .HasForeignKey(d => d.TicketId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderdTicket_Ticket");
 
                 entity.HasOne(d => d.Type)
-                    .WithMany()
+                    .WithMany(p => p.OrderedTickets)
                     .HasForeignKey(d => d.TypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderdTicket_TicketType");
@@ -221,7 +223,7 @@ namespace TrainTicketBooking.Models
             modelBuilder.Entity<TicketClass>(entity =>
             {
                 entity.HasKey(e => e.ClassId)
-                    .HasName("PK__ticket_c__FDF47986A17FA18D");
+                    .HasName("PK__ticket_c__FDF47986BB6DB0EC");
 
                 entity.ToTable("ticket_classes");
 
@@ -266,7 +268,7 @@ namespace TrainTicketBooking.Models
             modelBuilder.Entity<TicketType>(entity =>
             {
                 entity.HasKey(e => e.TypeId)
-                    .HasName("PK__ticket_t__2C00059816CF9509");
+                    .HasName("PK__ticket_t__2C00059800204374");
 
                 entity.ToTable("ticket_types");
 

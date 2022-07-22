@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using TrainTicketBooking.Models;
@@ -42,14 +43,22 @@ namespace TrainTicketBooking.Controllers
                 .Where(c => c.TrainId == trip.TrainId)
                 .ToList();
 
-            List<TicketType> ticketTypes = context.TicketTypes.ToList();
+            
 
             ViewBag.Carriages = carriages;
-            ViewBag.TicketTypes = ticketTypes;
+            //ViewBag.TicketTypes = Json(ticketTypes);
             //List<Ticket> tickets = context.Tickets.Where(t => t.TicketPriceId == trip.TicketPrices)
 
             //HttpContext.Session.SetString("account", "phuong");
             return View(trip);
+        }
+
+        public IActionResult GetTicketTypes()
+        {
+            PRN211_PROJECT_TRAIN_TICKET_BOOKINGContext context = new PRN211_PROJECT_TRAIN_TICKET_BOOKINGContext();
+            List<TicketType> ticketTypes = context.TicketTypes.ToList();
+            return Json(ticketTypes);
+
         }
     }
 }

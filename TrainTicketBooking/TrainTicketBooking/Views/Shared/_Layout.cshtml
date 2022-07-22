@@ -32,15 +32,15 @@
                             <a class="nav-link text-muted dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">@(JsonConvert.DeserializeObject<User>(Context.Session.GetString("account")).Fullname)</a>
 
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">My Tickets</a></li>
-                                <li><a class="dropdown-item" href="#">User profiles</a></li>
+                                <li><a class="dropdown-item" href="#">Vé của tôi</a></li>
+                                <li><a class="dropdown-item" href="#">Thông tin tài khoản</a></li>
                                 <hr/>
-                                <li><a class="dropdown-item" onclick="logout()">Log out</a></li>
+                                <li><a class="dropdown-item" onclick="logout()">Đăng xuất</a></li>
                             </ul>
                         </div>
                     </div>
                     <div>
-                        <a href="/cart/list" class="btn btn-light">Giỏ hàng</a>
+                        <a href="/cart/list" class="btn btn-light me-3">Giỏ hàng</a>
                     </div>
                 }
             </div>

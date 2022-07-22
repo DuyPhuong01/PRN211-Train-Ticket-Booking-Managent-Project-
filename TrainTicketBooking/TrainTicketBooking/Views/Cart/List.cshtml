@@ -1,7 +1,115 @@
-﻿@*
+﻿@using TrainTicketBooking.Models
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
     Layout = "_Layout";
     ViewBag.Title = "Giỏ hàng";
 }
+@model List<OrderedTicket>
+<div class="container-lg">
+    <div class="my-3 row">
+        <div class="col-8">
+        <div class="p-3 bg-white rounded-3 shadow-sm">
+            <div class="text-center">
+                <h3>Giỏ Hàng</h3>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (OrderedTicket orderedTicket in Model)
+                    {
+                        <tr>
+                            <td><input type="checkbox" name="order_ticket_id" value="@orderedTicket.Id" checked /></td>
+                            <td>
+                                <div class="border border-2 rounded-3 p-3 bg-white">
+                                    <div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div>
+                                                    <p class="ms-3 text-uppercase mb-0">Chuyến tàu</p>
+                                                    <h5 class="ms-5 text-uppercase mb-3">@orderedTicket.Ticket.TicketPrice.Trip.Route.RouteName</h5>
+                                                </div>
+                                                <div>
+                                                    <p class="ms-3 text-uppercase mb-0">Từ - Đến</p>
+                                                    <h5 class="ms-5 text-uppercase mb-3">@orderedTicket.Ticket.TicketPrice.Trip.Route.FromNavigation.LocationName - @orderedTicket.Ticket.TicketPrice.Trip.Route.ToNavigation.LocationName</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div>
+                                                    <p class="ms-3 text-uppercase mb-0">Loại</p>
+                                                    <div class="ms-5 text-uppercase mb-3">
+                                                        <select class="form-select" id="inputGroupSelect01">
+                                                            <option @(orderedTicket.TypeId == 1 ? "selected" : "") value="1">Người Lớn</option>
+                                                            <option @(orderedTicket.TypeId == 2 ? "selected" : "") value="2">Trẻ em</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p class="ms-3 text-uppercase mb-0">Giá Vé</p>
+                                                    <h5 class="ms-5 text-uppercase mb-3">@orderedTicket.Ticket.TicketPrice.Price</h5>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border border-2 py-3">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div>
+                                                    <p class="ms-3 text-uppercase mb-0">Ngày</p>
+                                                    <h5 class="ms-5 text-uppercase mb-3">@(orderedTicket.Ticket.TicketPrice.Trip.Time.Day)/@(orderedTicket.Ticket.TicketPrice.Trip.Time.Month)/@(orderedTicket.Ticket.TicketPrice.Trip.Time.Year)</h5>
+                                                </div>
+                                                <div>
+                                                    <p class="ms-3 text-uppercase mb-0">Tàu</p>
+                                                    <h5 class="ms-5 text-uppercase mb-3">@orderedTicket.Ticket.Carriage.Train.TrainName</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div>
+                                                    <p class="ms-3 text-uppercase mb-0">Chỗ ngồi</p>
+                                                    <h5 class="ms-5 text-uppercase mb-3">@(orderedTicket.Ticket.Row)@(orderedTicket.Ticket.Seat)</h5>
+                                                </div>
+                                                <div class="ms-3 border border-2 border-danger bg-warning rounded-3" style="width: fit-content">
+                                                    <div class="d-flex align-items-center">
+                                                        <h3 class="mx-5 text-uppercase my-3">12 : 30</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <a class="btn btn-danger">Xóa</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        </div>
+        <div class="col-4">
+            <div class="p-3 bg-white rounded-3 shadow-sm position-sticky" style="max-height: calc(100vh - 56px - 2rem); top: 1rem; overflow-y: scroll;">
+                <div class="text-center">
+                    <h3>Thành tiền</h3>
+                </div>
+
+                <div class="bg-primary p-2 text-dark bg-opacity-10 rounded-3">
+                    <div class="d-flex justify-content-end">
+                        <a class="btn btn-outline-primary">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {  }

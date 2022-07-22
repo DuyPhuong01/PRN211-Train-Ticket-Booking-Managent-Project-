@@ -31,8 +31,8 @@
                         </div>
                         <hr />
                     </div>
-                    <div id="bill-list">
-                    </div>
+                    <form id="bill-list" action="/cart/addtocart" method="post">
+                    </form>
                     <div>
                         <hr />
                         <div class="d-flex justify-content-between">
@@ -91,26 +91,40 @@
         </div>
     </div>
 </div>
-<div id="select-ticket-type" class="d-none">
-    <select name="type_id" class="form-select">
-        @foreach (TicketType ticketType in ViewBag.TicketTypes)
-        {
-            <option value="@ticketType.TypeId">@ticketType.TypeName</option>
-        }
-    </select>
-</div>
 @section Scripts
     {
     <script>
-        var a = $('#select-ticket-type').html();
+        var type_list = [];
+        $.ajax({
+            type: 'POST',
+            url: '/trip/GetTicketTypes',
+            dataType: 'json',
+            data: {
+            },
+            success: function(result) {
+                type_list = result;
+                console.log(result);
+            },
+            error: function(ex) {
+            }
+        });
+
+        function getSelectOptionTicketPrice(){
+            var result = `<select name="type_id" class="form-select">`;
+            type_list.forEach(a => {
+                result += `<option value="${a.typeId}">${a.typeName}</option>`;
+            });
+            return `${result}</select>`;
+        }
 
         function selectSeat(cb, price) {
             if (cb.checked) {
                 var name = $('.carriage label input[value="' + cb.value + '"] + a').text();
                 var row = '<div id="bill-' + cb.value + '" class="d-flex justify-content-between align-items-center mb-2">'
+                    + '<div><input type="hidden" name="ticket_id" value="' + cb.value + '"></div>'
                     + '<div>' + name + '</div>'
                     + '<div>'
-                    + a
+                    + getSelectOptionTicketPrice()
                     + '</div>'
                     + '<div class="price">' + price + '</div>'
                     + '</div>';
@@ -147,7 +161,12 @@
         }
         
         function addtocart() {
-
+            var input_list = $('input[name="ticket_id"]');
+            if(input_list.length == 0){
+                alert('a');
+            } else {
+                $('#bill-list').submit();
+            }
         }
     </script>
 
