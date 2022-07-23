@@ -1,0 +1,58 @@
+﻿@using TrainTicketBooking.Models
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Vé của tôi";
+}
+
+@model List<Order>
+
+<div class="container-lg">
+    <div class="my-3">
+        @if(Model.Count == 0){
+        <h3>Bạn chưa mua vé nào!</h3>
+        } else {
+            <div class="text-center">
+                <h3>Vé của tôi</h3>
+            </div>
+            @foreach (Order o in Model)
+            {
+            <div class="bg-white rounded-3 shadow-sm mb-3">
+                <a href="/account/order/@o.OrderId" class="text-muted text-decoration-none fs-4">
+                    <div class="p-3">
+                        <div><b>Ngày: </b><span>@o.OrderDate.Value.ToString("dd'/'MM'/'yyy HH:mm")</span></div>
+                        @{
+                        int sum = 0;
+                        }
+                        <div>
+                            <b>Vé: </b>
+                            @foreach (OrderedTicket ot in o.OrderedTickets)
+                            {
+                            <span>@(ot.Ticket.Row)@(ot.Ticket.Seat),</span>
+                            sum += (int)ot.Price;
+                            }
+                        </div>
+                        <div><b>Tổng: </b><span class="format-price">@sum</span></div>
+                    </div>
+                </a>
+            </div>
+            }
+        }
+    </div>
+</div>
+@section Scripts
+    {  
+    
+    <script>
+        var formatter = new Intl.NumberFormat('vie-VN', {
+                style: 'currency',
+                currency: 'VND',
+            });
+            $.each($('.format-price'), function(t){
+                var price = parseInt($(this).html());
+                $(this).html(formatter.format(price));
+            });
+    </script>
+    }

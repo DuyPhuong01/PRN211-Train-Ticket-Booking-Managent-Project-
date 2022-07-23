@@ -22,7 +22,7 @@
                     <tbody>
                         @foreach (Route route in Model)
                         {
-                            <tr onclick="loadTrip(@route.RouteId, 1)">
+                            <tr onclick="loadTrip(@route.RouteId, 1)" style="cursor:pointer;">
                                 <td>
                                     <div>
                                         <span>@route.RouteName</span>

@@ -10,6 +10,7 @@
     <title>@ViewBag.Title</title>
     <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="~/css/Style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="~/lib/jquery/jquery.js"></script>
 </head>
 <body>
@@ -32,8 +33,7 @@
                             <a class="nav-link text-muted dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">@(JsonConvert.DeserializeObject<User>(Context.Session.GetString("account")).Fullname)</a>
 
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Vé của tôi</a></li>
-                                <li><a class="dropdown-item" href="#">Thông tin tài khoản</a></li>
+                                <li><a class="dropdown-item" href="/account/myorder">Vé của tôi</a></li>
                                 <hr/>
                                 <li><a class="dropdown-item" onclick="logout()">Đăng xuất</a></li>
                             </ul>
@@ -68,7 +68,7 @@
                             <label for="floatingPasswordLogin">Mật khẩu</label>
                         </div>
                     </form>
-                    <span>Chưa có tài khoản? <a class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal-register">Đăng ký</a></span>
+                    <span>Chưa có tài khoản? <a class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal-register" onclick="$('#modal-login').modal('hide')">Đăng ký</a></span>
                 </div>
                 <div class="modal-footer">
                     <div id="loaderDiv" class="spinner-border me-3" role="status">
@@ -87,20 +87,38 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="login-form" class="mb-3">
+                    <div id="notify-register-error">
+                    </div>
+                    <form id="register-form" class="mb-3">
                         <div class="form-floating mb-3">
                             <input type="text" name="username" class="form-control" id="floatingUsernameRegister" placeholder="Tên đăng nhập">
                             <label for="floatingUsernameRegister">Tên đăng nhập</label>
                         </div>
-                        <div class="form-floating">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="fullname" class="form-control" id="floatingFullnameRegister" placeholder="Họ Tên">
+                            <label for="floatingFullnameRegister">Họ Tên</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="tel" name="phone" class="form-control" id="floatingPhoneRegister" placeholder="Số điện thoại">
+                            <label for="floatingPhoneRegister">Số điện thoại</label>
+                        </div>
+                        <span id="matching-password-alert"></span>
+                        <div class="form-floating mb-3">
                             <input type="password" name="password" class="form-control" id="floatingPasswordRegister" placeholder="Mật khẩu">
                             <label for="floatingPasswordRegister">Mật khẩu</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="password" name="repassword" class="form-control" id="floatingRePasswordRegister" placeholder="Nhập lại Mật khẩu">
+                            <label for="floatingRePasswordRegister">Nhập lại Mật khẩu</label>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-login">Đăng Nhập</button>
-                    <button type="button" class="btn btn-primary">Đăng Ký</button>
+                    <div id="loaderDivRegister" class="spinner-border me-3" role="status">
+                      <span class="visually-hidden">Đang đăng nhập...</span>
+                    </div>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-login" onclick="$('#modal-register').modal('hide')">Đăng Nhập</button>
+                    <button type="button" class="btn btn-primary" onclick="register()">Đăng Ký</button>
                 </div>
             </div>
         </div>
@@ -110,8 +128,9 @@
 </html>
 <script>
     $("#loaderDiv").hide();
+    $("#loaderDivRegister").hide();
 
-    function login_notify_html(message, type) {
+    function notify_html(message, type) {
         return `<div class="alert alert-${type} alert-dismissible" role="alert">
                     <div>${message}</div>
                 </div>`;
@@ -125,11 +144,11 @@
         notify.html('');
 
         if (username == '') {
-            notify.append(login_notify_html('You must enter username!', 'danger'));
+            notify.append(notify_html('You must enter username!', 'danger'));
             return;
         }
         if (password == '') {
-            notify.append(login_notify_html('You must enter password!', 'danger'));
+            notify.append(notify_html('You must enter password!', 'danger'));
             return;
         }
 
@@ -150,12 +169,73 @@
                     location.reload();
                 } else {
                     notify.html('');
-                    notify.append(login_notify_html(result.htmlMsg, result.htmlMsgType));
+                    notify.append(notify_html(result.htmlMsg, result.htmlMsgType));
                 }
             },
             error: function(ex) {
                 notify.html('');
-                notify.append(login_notify_html('There is an problem on connecting to server!', 'danger'));
+                notify.append(notify_html('There is an problem on connecting to server!', 'danger'));
+            }
+        });
+    }
+
+    function register() {
+        var notify = $('#notify-register-error');
+        var username = $('#floatingUsernameRegister').val();
+        var fullname = $('#floatingFullnameRegister').val();
+        var phone = $('#floatingPhoneRegister').val();
+        var password = $('#floatingPasswordRegister').val();
+        var repassword = $('#floatingRePasswordRegister').val();
+
+        notify.html('');
+
+        if (username == '') {
+            notify.append(notify_html('You must enter username!', 'danger'));
+            return;
+        }
+        if (fullname == '') {
+            notify.append(notify_html('You must enter fullname!', 'danger'));
+            return;
+        }
+        if (phone == '') {
+            notify.append(notify_html('You must enter phone!', 'danger'));
+            return;
+        }
+        if (password == '') {
+            notify.append(notify_html('You must enter password!', 'danger'));
+            return;
+        }
+        if (repassword == '') {
+            notify.append(notify_html('You must re-enter password!', 'danger'));
+            return;
+        }
+        if(password != repassword){
+            notify.append(notify_html('Password not match!', 'danger'));
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/account/register',
+            dataType: 'json',
+            data: {
+                username: username,
+                fullname: fullname,
+                phone: phone,
+                repassword: repassword,
+                password: password
+            },
+            beforeSend: function() {
+                $("#loaderDivRegister").show();
+            },
+            success: function(result) {
+                $("#loaderDivRegister").hide();
+                notify.html('');
+                notify.append(notify_html(result.htmlMsg, result.htmlMsgType));
+            },
+            error: function(ex) {
+                notify.html('');
+                notify.append(notify_html('There is an problem on connecting to server!', 'danger'));
             }
         });
     }

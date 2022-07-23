@@ -46,13 +46,18 @@ namespace TrainTicketBooking
                     new { controller = "Trip", action = "List" }
                     );
                 endpoints.MapControllerRoute(
-                    name: "trip-list",
+                    name: "trip-details",
                     pattern: "trip/details/{tripid}",
                     new { controller = "Trip", action = "Details" }
                     );
                 endpoints.MapControllerRoute(
+                    name: "order-details",
+                    pattern: "account/order/{orderid}",
+                    new { controller = "Account", action = "Order" }
+                    );
+                endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=home}/{action=index}"
+                    pattern: "{controller=route}/{action=list}"
                     );
             });
         }

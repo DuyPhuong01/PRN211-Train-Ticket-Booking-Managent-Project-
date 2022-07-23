@@ -1,0 +1,88 @@
+﻿@using TrainTicketBooking.Models
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Mua Hàng thành công";
+}
+@model Order
+
+<div class="container-lg">
+    <div class="my-3">
+        <div class="p-3 bg-white rounded-3 shadow-sm mb-3 position-sticky top-0">
+            <h4><b>Tổng: </b><span class="format-price">@ViewBag.Total</span></h4>
+            <h4><b>Ngày đặt hàng: </b><span>@Model.OrderDate.Value.ToString("dd'/'MM'/'yyy HH:mm")</span></h4>
+        </div>
+        @foreach (OrderedTicket ot in Model.OrderedTickets)
+        {
+            <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
+                <div class="border border-2 border-dark rounded-3 p-3 bg-warning bg-opacity-10">
+                    <div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div>
+                                    <p class="ms-3 text-uppercase mb-0">Chuyến tàu</p>
+                                    <h5 class="ms-5 text-uppercase mb-3">@ot.Ticket.TicketPrice.Trip.Route.RouteName</h5>
+                                </div>
+                                <div>
+                                    <p class="ms-3 text-uppercase mb-0">Từ - Đến</p>
+                                    <h5 class="ms-5 text-uppercase mb-3">@ot.Ticket.TicketPrice.Trip.Route.FromNavigation.LocationName - @ot.Ticket.TicketPrice.Trip.Route.ToNavigation.LocationName</h5>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div>
+                                    <p class="ms-3 text-uppercase mb-0">Loại</p>
+                                    <h5 class="ms-5 text-uppercase mb-3">@(ot.TypeId == 1 ? "Người Lớn" : "Trẻ em")</h5>
+                                </div>
+                                <div>
+                                    <p class="ms-3 text-uppercase mb-0">Giá Vé</p>
+                                    <h5 class="ms-5 text-uppercase mb-3 ticket-price format-price">@((int)ot.Price)</h5>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border border-2 border-dark py-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <div>
+                                    <p class="ms-3 text-uppercase mb-0">Ngày</p>
+                                    <h5 class="ms-5 text-uppercase mb-3">@(ot.Ticket.TicketPrice.Trip.Time.Day)/@(ot.Ticket.TicketPrice.Trip.Time.Month)/@(ot.Ticket.TicketPrice.Trip.Time.Year)</h5>
+                                </div>
+                                <div>
+                                    <p class="ms-3 text-uppercase mb-0">Tàu</p>
+                                    <h5 class="ms-5 text-uppercase mb-3">@ot.Ticket.Carriage.Train.TrainName</h5>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div>
+                                    <p class="ms-3 text-uppercase mb-0">Chỗ ngồi</p>
+                                    <h5 class="ms-5 text-uppercase mb-3">@(ot.Ticket.Row)@(ot.Ticket.Seat)</h5>
+                                </div>
+                                <div class="ms-3 border border-2 border-dark border-danger bg-warning rounded-3" style="width: fit-content">
+                                    <div class="d-flex align-items-center">
+                                        <h3 class="mx-5 text-uppercase my-3">@(ot.Ticket.TicketPrice.Trip.Time.Hour) : @(ot.Ticket.TicketPrice.Trip.Time.Minute)</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts
+    {  
+    <script>
+        var formatter = new Intl.NumberFormat('vie-VN', {
+                style: 'currency',
+                currency: 'VND',
+            });
+            $.each($('.format-price'), function(t){
+                var price = parseInt($(this).html());
+                $(this).html(formatter.format(price));
+            });
+    </script>
+    }

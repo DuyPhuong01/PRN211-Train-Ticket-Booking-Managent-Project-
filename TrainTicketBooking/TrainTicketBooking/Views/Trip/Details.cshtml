@@ -14,9 +14,9 @@
             <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
                 <div>
                     <p>@Model.Route.RouteName</p>
-                    <p>@Model.Route.FromNavigation.LocationName - @Model.Route.ToNavigation.LocationName</p>
-                    <p>@Model.Train.TrainName</p>
-                    <p>@(Model.Time.Day)/@(Model.Time.Month)/@(Model.Time.Year) @(Model.Time.Hour):@(Model.Time.Minute)</p>
+                    <p><b>Tuyến: </b>@Model.Route.FromNavigation.LocationName - @Model.Route.ToNavigation.LocationName</p>
+                    <p><b>Tàu: </b>@Model.Train.TrainName</p>
+                    <p><b>Khởi hành: </b>@(Model.Time.ToString("dd'/'MM'/'yyyy HH:mm"))</p>
                 </div>
             </div>
             <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
@@ -37,7 +37,7 @@
                         <hr />
                         <div class="d-flex justify-content-between">
                             <b>Tổng</b>
-                            <b><span id="total-bill">0</span><span> đ</span></b>
+                            <b><span id="total-bill">0 đ</span></b>
                         </div>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
                         <div class="d-flex">
                             @for (int i = 0; i < @carriage.Tickets.Count - 4; i += 4)
                             {
-                                <div>
+                                <div class="d-grid me-3">
                                     @for (int j = i; j < i + 4; j++)
                                     {
                                         @if (carriage.Tickets.ToList()[j].Status == 1)
@@ -94,6 +94,14 @@
 @section Scripts
     {
     <script>
+        var formatter = new Intl.NumberFormat('vie-VN', {
+                style: 'currency',
+                currency: 'VND',
+            });
+            $.each($('.ticket'), function(t){
+                var price = parseInt($(this).find('.ticket-price').html());
+                $(this).find('.formated-ticket-price').html(formatter.format(price));
+            });
         var type_list = [];
         $.ajax({
             type: 'POST',
@@ -121,20 +129,23 @@
             if (cb.checked) {
                 var name = $('.carriage label input[value="' + cb.value + '"] + a').text();
                 var row = '<div id="bill-' + cb.value + '" class="d-flex justify-content-between align-items-center mb-2">'
-                    + '<div><input type="hidden" name="ticket_id" value="' + cb.value + '"></div>'
-                    + '<div>' + name + '</div>'
+                    + '<div><div><input type="hidden" name="ticket_id" value="' + cb.value + '">'
+                    + name + '</div></div>'
                     + '<div>'
                     + getSelectOptionTicketPrice()
                     + '</div>'
-                    + '<div class="price">' + price + '</div>'
+                    + '<div class="d-none price">' + price + '</div>'
+                    + '<div class="formated-price">' + formatter.format(price) + '</div>'
                     + '</div>';
 
                 $('#bill-list').append(row);
                 $('#bill-list #bill-' + cb.value + ' select').change(function() {
                     if ($('#bill-list #bill-' + cb.value + ' select option').first().is(':selected')) {
                         $('#bill-list #bill-' + cb.value + ' .price').text(price);
+                        $('#bill-list #bill-' + cb.value + ' .formated-price').html(formatter.format(price));
                     } else {
                         $('#bill-list #bill-' + cb.value + ' .price').text(price / 2);
+                        $('#bill-list #bill-' + cb.value + ' .formated-price').html(formatter.format(price / 2));
                     }
                     calculateTotal();
                 });
@@ -150,7 +161,7 @@
                 sum += parseInt($(this).text());
 
             });
-            $('#total-bill').text(sum);
+            $('#total-bill').text(formatter.format(sum));
         }
 
         function clearlist() {

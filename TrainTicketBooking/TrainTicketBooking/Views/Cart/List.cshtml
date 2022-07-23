@@ -9,24 +9,33 @@
 @model List<OrderedTicket>
 <div class="container-lg">
     <div class="my-3 row">
-        <div class="col-8">
-        <div class="p-3 bg-white rounded-3 shadow-sm">
+        <div class="p-3 bg-white rounded-3 shadow-sm mb-3 position-sticky top-0">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <div><b>Tổng: </b><span id="total-count"></span></div>
+                    <div><b>Thành tiền: </b><span id="total-price"></span></div>
+                </div>
+                <div class="d-flex">
+                    <span class="me-3 text-danger" id="alert-buy"></span>
+                    <div><a class="btn btn-outline-success" onclick="buy()">Mua ngay</a></div>
+                </div>
+            </div>
+        </div>
+        <form id="cart-form" class="p-3 bg-white rounded-3 shadow-sm" action="/cart/order" method="post">
             <div class="text-center">
                 <h3>Giỏ Hàng</h3>
             </div>
             <table class="table">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
                 <tbody>
                     @foreach (OrderedTicket orderedTicket in Model)
                     {
-                        <tr>
-                            <td><input type="checkbox" name="order_ticket_id" value="@orderedTicket.Id" checked /></td>
+                        <tr class="ticket" id="ticket-@orderedTicket.Id">
+                            <td>
+                                <label class="label-checkbox-select-ticket">
+                                    <input type="checkbox" name="order_ticket_id" value="@orderedTicket.Id" checked hidden onchange="changeSelectedTicket()"/>
+                                    <div class="checkbox-style"></div>
+                                </label>
+                            </td>
                             <td>
                                 <div class="border border-2 border-dark rounded-3 p-3 bg-warning bg-opacity-10">
                                     <div>
@@ -45,7 +54,7 @@
                                                 <div>
                                                     <p class="ms-3 text-uppercase mb-0">Loại</p>
                                                     <div class="ms-5 text-uppercase mb-3">
-                                                        <select class="form-select" id="inputGroupSelect01">
+                                                        <select class="form-select" id="inputGroupSelect01" name="type_id" onchange="changeType(@orderedTicket.Id)">
                                                             <option @(orderedTicket.TypeId == 1 ? "selected" : "") value="1">Người Lớn</option>
                                                             <option @(orderedTicket.TypeId == 2 ? "selected" : "") value="2">Trẻ em</option>
                                                         </select>
@@ -53,7 +62,8 @@
                                                 </div>
                                                 <div>
                                                     <p class="ms-3 text-uppercase mb-0">Giá Vé</p>
-                                                    <h5 class="ms-5 text-uppercase mb-3">@orderedTicket.Ticket.TicketPrice.Price</h5>
+                                                    <div class="d-none ticket-price">@(orderedTicket.TypeId == 1 ? (int)orderedTicket.Ticket.TicketPrice.Price : (int)orderedTicket.Ticket.TicketPrice.Price/2)</div>
+                                                    <h5 class="ms-5 text-uppercase mb-3 formated-ticket-price">@(orderedTicket.TypeId == 1 ? (int)orderedTicket.Ticket.TicketPrice.Price : (int)orderedTicket.Ticket.TicketPrice.Price/2)</h5>
                                                 </div>
 
                                             </div>
@@ -78,7 +88,7 @@
                                                 </div>
                                                 <div class="ms-3 border border-2 border-dark border-danger bg-warning rounded-3" style="width: fit-content">
                                                     <div class="d-flex align-items-center">
-                                                        <h3 class="mx-5 text-uppercase my-3">12 : 30</h3>
+                                                        <h3 class="mx-5 text-uppercase my-3">@(orderedTicket.Ticket.TicketPrice.Trip.Time.Hour) : @(orderedTicket.Ticket.TicketPrice.Trip.Time.Minute)</h3>
                                                     </div>
                                                 </div>
                                             </div>
@@ -87,29 +97,96 @@
                                 </div>
                             </td>
                             <td>
-                                <a class="btn btn-danger">Xóa</a>
+                                <a class="btn btn-danger" onclick="removeFromCart(@orderedTicket.Id)">Xóa</a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-        </div>
-        </div>
-        <div class="col-4">
-            <div class="p-3 bg-white rounded-3 shadow-sm position-sticky" style="max-height: calc(100vh - 56px - 2rem); top: 1rem; overflow-y: scroll;">
-                <div class="text-center">
-                    <h3>Thành tiền</h3>
-                </div>
-
-                <div class="bg-primary p-2 text-dark bg-opacity-10 rounded-3">
-                    <div class="d-flex justify-content-end">
-                        <a class="btn btn-outline-primary">Mua ngay</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 
 @section Scripts
-    {  }
+    { 
+        <script>
+            var formatter = new Intl.NumberFormat('vie-VN', {
+                style: 'currency',
+                currency: 'VND',
+            });
+            $.each($('.ticket'), function(t){
+                var price = parseInt($(this).find('.ticket-price').html());
+                $(this).find('.formated-ticket-price').html(formatter.format(price));
+            });
+
+            calcutatePrice();
+
+            function calcutatePrice(){
+                var sum = 0;
+                var count = 0;
+                $.each($('.ticket'), function(t){
+                    if ($(this).find('input[type="checkbox"]:checked').length != 0) {
+                        count++;
+                        sum += parseInt($(this).find('.ticket-price').html());
+                    }
+                });
+                $('#total-count').html(count);
+                $('#total-price').html(formatter.format(sum));
+            }
+
+            function buy(){
+                var count = 0;
+                $.each($('.ticket'), function(t){
+                    if ($(this).find('input[type="checkbox"]:checked').length != 0) {
+                        count++;
+                    }
+                });
+                if (count > 0) {
+                    $('#cart-form').submit();
+                } else {
+                    $('#alert-buy').text('Bạn chưa chọn vé nào!');
+                }
+            }
+
+            function changeSelectedTicket() {
+                calcutatePrice();
+            }
+
+        function changeType(id) {
+            var type_id = $(`#ticket-${id}`).find('option:selected').val();
+            $.ajax({
+            type: 'POST',
+            url: '/cart/ChangeTicketType',
+            dataType: 'json',
+            data: {
+                id: id,
+                type_id: type_id
+            },
+            success: function(result) {
+                $(`#ticket-${id}`).find('.formated-ticket-price').html(formatter.format(result.money));
+                $(`#ticket-${id}`).find('.ticket-price').html(result.money);
+            calcutatePrice();
+            },
+            error: function(ex) {
+            }
+        });
+
+        }
+
+        function removeFromCart(id) {
+            $.ajax({
+            type: 'POST',
+            url: '/cart/removefromcart',
+            dataType: 'json',
+            data: {
+                id: id
+            },
+            success: function(result) {
+                $(`#ticket-${id}`).remove();
+            },
+            error: function(ex) {
+            }
+            });
+        }
+        </script>
+}

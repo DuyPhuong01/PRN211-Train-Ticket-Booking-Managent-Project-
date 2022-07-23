@@ -68,3 +68,6 @@ C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-B
 C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\TrainTicketBooking.pdb
 C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\TrainTicketBooking.genruntimeconfig.cache
 C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\ref\TrainTicketBooking.dll
+C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\Razor\Views\Cart\Order.cshtml.g.cs
+C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\Razor\Views\Account\MyOrder.cshtml.g.cs
+C:\Users\Duy Phuong\Desktop\Summer 2022\PRN211\Project\GIt\PRN211-Train-Ticket-Booking-Managent-Project-\TrainTicketBooking\TrainTicketBooking\obj\Debug\net5.0\Razor\Views\Account\Order.cshtml.g.cs

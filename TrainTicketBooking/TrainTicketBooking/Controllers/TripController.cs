@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TrainTicketBooking.Models;
@@ -16,8 +17,9 @@ namespace TrainTicketBooking.Controllers
             int items_per_page = 10;
 
             List<Trip> trips = context.Trips
-                .Where(r => r.RouteId == routeid)
+                .Where(r => r.RouteId == routeid && r.Time > DateTime.Now)
                 .Skip((pagenumber - 1) * items_per_page).Take(items_per_page)
+                .OrderBy(t => t.Time)
                 .ToList();
             int count = context.Trips.Where(r => r.RouteId == routeid).ToList().Count();
             int number_of_page = count % items_per_page == 0 ? count / items_per_page : count / items_per_page + 1;

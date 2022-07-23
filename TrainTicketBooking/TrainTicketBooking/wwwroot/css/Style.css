@@ -33,3 +33,32 @@ table tbody tr:hover {
     background-color: #198754;
     color: #FFF;
 }
+
+label.label-checkbox-select-ticket {
+    height: 100%;
+}
+
+label.label-checkbox-select-ticket > input[type="checkbox"] + div {
+    padding: 5px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: 1.7rem;
+    background-color: #f8f9fa;
+}
+
+label.label-checkbox-select-ticket > input[type="checkbox"]:checked + div {
+    background-color: rgb(13, 110, 253, .2);
+}
+
+label.label-checkbox-select-ticket > input[type="checkbox"] + div:before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f058";
+    opacity: .3;
+}
+label.label-checkbox-select-ticket > input[type="checkbox"]:checked + div:before {
+    color: dodgerblue;
+    opacity: 1
+}
